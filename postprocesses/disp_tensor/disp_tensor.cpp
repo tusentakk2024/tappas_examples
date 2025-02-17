@@ -1,6 +1,7 @@
 #include <iostream>
 #include <regex>
 #include "hailo/hailort.h"
+#include "common/labels/coco_eighty.hpp"
 #include "disp_tensor.hpp"
 
 static const hailo_format_order_t HAILO_NMS_BY_CLASS_VALUE = (hailo_format_order_t)22;
@@ -8,6 +9,8 @@ static const hailo_format_order_t HAILO_NMS_BY_CLASS_VALUE = (hailo_format_order
 void filter(HailoROIPtr roi)
 {
     std::vector<HailoTensorPtr> tensors = roi->get_tensors();
+    std::vector<HailoDetection> detections;
+    auto label = common::coco_eighty;
 
     for (auto tensor : tensors)
     {
@@ -19,7 +22,7 @@ void filter(HailoROIPtr roi)
             uint32_t max_bboxes_per_class = vstream_info.nms_shape.max_bboxes_per_class;
             uint32_t num_of_classes = vstream_info.nms_shape.number_of_classes;
             size_t buffer_offset = 0;
-            uint8_t *buffer = tensor->data();    
+            uint8_t *buffer = tensor->data();
 
             if ((HAILO_FORMAT_ORDER_HAILO_NMS != vstream_info.format.order) && (HAILO_NMS_BY_CLASS_VALUE != vstream_info.format.order))
             {
@@ -41,6 +44,9 @@ void filter(HailoROIPtr roi)
                     float32_t h = bbox->y_max - bbox->y_min;
                     float confidence = CLAMP(bbox->score, 0.0f, 1.0f);
 
+                    auto detection = HailoDetection(HailoBBox(x, y, w, h), class_id + 1, label[class_id + 1], confidence);
+                    detections.push_back(detection);
+
                     buffer_offset += sizeof(hailo_bbox_float32_t);
 
                     std::cout << "id:" << class_id;
@@ -53,4 +59,6 @@ void filter(HailoROIPtr roi)
             }
         }
     }
+
+    hailo_common::add_detections(roi, detections);
 }
