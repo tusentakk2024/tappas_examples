@@ -12,11 +12,11 @@ from gi.repository import Gst, GLib, GObject
 def tutorial_main():
     Gst.init(sys.argv[1:])
 
-    pipeline = Gst.parse_launch("filesrc location=../resources/detection0.mp4 name=source ! qtdemux ! h264parse ! avdec_h264 max-threads=2  ! videoscale name=source_videoscale n-threads=2 ! videoconvert n-threads=3 name=source_convert qos=false ! video/x-raw, format=RGB, pixel-aspect-ratio=1/1 ! videoscale name=inference_videoscale n-threads=2 qos=false ! video/x-raw, pixel-aspect-ratio=1/1 ! videoconvert name=inference_videoconvert n-threads=2 ! hailonet name=inference_hailonet hef-path=../resources/yolov8s_h8l.hef batch-size=2 nms-score-threshold=0.3 nms-iou-threshold=0.45 output-format-type=HAILO_FORMAT_TYPE_FLOAT32 force-writable=true ! hailofilter name=inference_hailofilter so-path=../resources/libyolo_hailortpp_postprocess.so qos=false ! hailooverlay name=hailo_display_hailooverlay ! videoconvert name=hailo_display_videoconvert n-threads=2 qos=false ! fpsdisplaysink name=hailo_display video-sink=xvimagesink sync=true text-overlay=false signal-fps-measurements=true")
+    pipeline = Gst.parse_launch("filesrc location=../resources/example.mp4 name=source ! qtdemux ! h264parse ! avdec_h264 max-threads=2  ! videoscale name=source_videoscale n-threads=2 ! videoconvert n-threads=3 name=source_convert qos=false ! video/x-raw, format=RGB, pixel-aspect-ratio=1/1 ! videoscale name=inference_videoscale n-threads=2 qos=false ! video/x-raw, pixel-aspect-ratio=1/1 ! videoconvert name=inference_videoconvert n-threads=2 ! hailonet name=inference_hailonet hef-path=../resources/yolov8s_h8l.hef batch-size=2 nms-score-threshold=0.3 nms-iou-threshold=0.45 output-format-type=HAILO_FORMAT_TYPE_FLOAT32 force-writable=true ! hailofilter name=inference_hailofilter so-path=../resources/libdisp_tensor_post.so qos=false ! hailooverlay name=hailo_display_hailooverlay ! videoconvert name=hailo_display_videoconvert n-threads=2 qos=false ! fpsdisplaysink name=hailo_display video-sink=xvimagesink sync=true text-overlay=false signal-fps-measurements=true")
     ret = pipeline.set_state(Gst.State.PLAYING)
     if ret == Gst.StateChangeReturn.FAILURE:
         print("Unable to set the pipeline to the playing state.")
-        sys.exit(1)
+        #sys.exit(1)
 
     # Wait for EOS or error
     bus = pipeline.get_bus()
