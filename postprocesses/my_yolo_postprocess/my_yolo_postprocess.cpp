@@ -2,7 +2,7 @@
 #include <regex>
 #include "hailo/hailort.h"
 #include "common/labels/coco_eighty.hpp"
-#include "disp_tensor.hpp"
+#include "my_yolo_postprocess.hpp"
 
 static const hailo_format_order_t HAILO_NMS_BY_CLASS_VALUE = (hailo_format_order_t)22;
 
