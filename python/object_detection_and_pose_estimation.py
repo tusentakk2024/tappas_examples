@@ -23,8 +23,7 @@ def tutorial_main():
         videoscale name=inference_videoscale n-threads=2 qos=false ! \
         video/x-raw, pixel-aspect-ratio=1/1 ! \
         videoconvert name=inference_videoconvert n-threads=2 ! \
-        hailonet name=inference_hailonet hef-path=./resources/mspn_regnetx_800mf.hef \
-        scheduling-algorithm=1 scheduler-threshold=5 scheduler-timeout-ms=100 vdevice-group-id=1 ! \
+        hailonet name=inference_hailonet hef-path=./resources/mspn_regnetx_800mf.hef scheduling-algorithm=1 scheduler-threshold=5 scheduler-timeout-ms=100 vdevice-group-id=1 ! \
         hailofilter name=pose-estimation so-path=./resources/libmspn_post.so config-path=./resources/mspn.json qos=false ! \
         hailooverlay name=hailo_display_hailooverlay ! \
         videoconvert name=hailo_display_videoconvert n-threads=2 qos=false ! \
